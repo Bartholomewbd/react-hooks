@@ -2,35 +2,43 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import './App.css';
 
-//problem is you cannot have multiple hooks :-/
+//lets add multiple hook capability
 
-
-let value
+//Give the ability to track multiple values and hooks
+let values = []
+let currentHook = 0
 
 function useState(initialState) {
-  if (typeof value === 'undefined') {
-    value = initialState
+  //use values array instead of the singular value and access it using indexes
+  if (typeof values[currentHook] === 'undefined') {
+    values[currentHook] = initialState
   }
 
+  //update setter function so only corresponding value is updated
+  let hookIndex = currentHook
   function setState(nextValue) {
-    console.log(nextValue)
-    value = nextValue
+    values[hookIndex] = nextValue
     ReactDOM.render(<MyName />, document.getElementById('root'))
   }
-  console.log(value)
-  return [value, setState]
+  return [values[currentHook++], setState]
 }
 
 const MyName = () => {
-  const [name, setName] = useState('')
+  currentHook = 0
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
 
   const handleChange = (evt) => {
-    setName(evt.target.value)
+    setFirstName(evt.target.value)
+  }
+  const handleLastNameChange = (evt) => {
+    setLastName(evt.target.value)
   }
   return (
     <div>
-      <h1>My Name is : {name} </h1>
-      <input type="text" value={name} onChange={handleChange} />
+      <h1>My Name is : {firstName} {lastName}</h1>
+      <input type="text" value={firstName} onChange={handleChange} />
+      <input type="text" value={lastName} onChange={handleLastNameChange} />
     </div>
   );
 }
